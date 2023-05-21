@@ -1,7 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@functions{
+    private bool IsLoggedIn()
+    {
+        var authenticationState = AuthenticationStateProvider.GetAuthenticationStateAsync().Result;
+        return authenticationState.User.Identity.IsAuthenticated;
+    }
+}
+
+@inherits LayoutComponentBase
 
 <PageTitle>IMS</PageTitle>
-
 <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">E MERCHANTS</a>
@@ -15,18 +24,40 @@
                         Home
                     </NavLink>
                 </li>
+                <AuthorizeView Roles="Admin, WholeSaler">
                 <li class="nav-item">
                     <NavLink class="nav-link" href="inventories" @onclick="CollapseSubNavMenu">
                         Inventories
                     </NavLink>
                 </li>
+                
                 <li class="nav-item">
                     <NavLink class="nav-link" href="products" @onclick="CollapseSubNavMenu">
                         Products
                     </NavLink>
                 </li>
+               </AuthorizeView>
+
+                <AuthorizeView Roles="Admin, Courier">
                 <li class="nav-item dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="#" @onclick="ToggleSubNavMenu" id="navbarDropdown" >
+                        <NavLink class="nav-link" href="courier" @onclick="CollapseSubNavMenu">
+                        Courier
+                    </NavLink>
+                
+                </li>
+                </AuthorizeView>
+                <AuthorizeView Roles="Admin, Vendor">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="wishlist" @onclick="CollapseSubNavMenu">
+                        Wishlist
+                    </NavLink>
+                </li>
+              </AuthorizeView>
+
+              <AuthorizeView Roles="Admin">
+                 
+                <li class="nav-item dropdown">
+                    <NavLink class="nav-link dropdown-toggle" href="#" @onclick="ToggleSubNavMenu" id="navbarDropdown">
                         Activities
                     </NavLink>
                     @*The dropdown menu is fun to learn how it works. You can download the source code and take a look*@
@@ -48,58 +79,80 @@
                                     <span class="oi oi-home" aria-hidden="true"></span> Sell
                                 </NavLink>
                             </li>
+
                         </ul>
+
+                        
                     }
-                </li>                                          
+                </li>
+                </AuthorizeView>
+               <AuthorizeView Roles="Admin">
+
+                 
                 <li class="nav-item dropdown">
-                    <NavLink class="nav-link dropdown-toggle" href="#" @onclick="ToggleSubNavMenu1" id="navbarDropdown" >
+                    <NavLink class="nav-link dropdown-toggle" href="#" @onclick="ToggleSubNavMenu1" id="navbarDropdown">
                         Reports
                     </NavLink>
                     @if (expandSubNavSettings1)
-                    {
+                    {  
                         <ul class="dropdown-menu show" aria-labelledby="navbarDropdown" @onclick="ToggleSubNavMenu1">
+                           
                             <li class="nav-item">
                                 <NavLink class="dropdown-item" href="inventoryreport">
                                     <span class="oi oi-fork" aria-hidden="true"></span> Inventory Transactions
                                 </NavLink>
                             </li>
+                       
+                            
                             <li class="nav-item">
                                 <NavLink class="dropdown-item" href="productreport">
                                     <span class="oi oi-command" aria-hidden="true"></span> Product Transactions
                                 </NavLink>
                             </li>
-                            
+                                
                         </ul>
                     }
-                </li>           
+                </li>
+              </AuthorizeView>
             </ul>
+              
             <LoginDisplay></LoginDisplay>
         </div>
     </div>
 </nav>
-<br/>
-<main class="content px-3">
-  <br/>
-  <div class="bg-light p-5 rounded">      
-    @Body    
-  </div>
-</main>
+
+<br />
+@if (IsLoggedIn())
+{
+    <div style="background-image: url('../AdminLTE/img/bg.jpg'); background-size: cover; background-position: center; height: 100%; width: 100%; overflow-y: scroll;">
+        <main class="content px-3">
+            <br />
+            <div class="bg-light p-5 rounded">
+                @Body
+            </div>
+        </main>
+    </div>
+}
+else
+{
+    <div style="background-image: url('../AdminLTE/img/bg.jpg'); background-size: cover; background-position: center; height: 100vh; overflow-y: scroll;">
+    </div>
+}
 
 
-@code{
+
+@code {
     bool collapseNavMenu = true;
-
+    private bool showInitialScreen;
     private bool expandSubNavSettings;
     private bool expandSubNavSettings1;
-
-
     string baseMenuClass = "navbar-collapse offcanvas-collapse";
 
     string NavMenuCssClass => baseMenuClass + (collapseNavMenu ? " collapse" : "");
 
     void ToggleNavMenu()
     {
-        if(!expandSubNavSettings)
+        if (!expandSubNavSettings)
         {
             collapseNavMenu = !collapseNavMenu;
         }
@@ -108,13 +161,13 @@
     void ToggleSubNavMenu()
     {
         expandSubNavSettings1 = false;
-        expandSubNavSettings = !expandSubNavSettings;        
+        expandSubNavSettings = !expandSubNavSettings;
     }
 
     void ToggleSubNavMenu1()
     {
         expandSubNavSettings = false;
-        expandSubNavSettings1 = !expandSubNavSettings1;        
+        expandSubNavSettings1 = !expandSubNavSettings1;
     }
 
     void CollapseSubNavMenu()

@@ -1,0 +1,52 @@
+﻿@page "/shiporder/{orderId}"
+
+@inject NavigationManager navigationManager
+<h1>Ship Order</h1>
+
+@if (Order != null)
+{
+    <form>
+        <div class="form-group">
+            <label for="customerName">Customer Name:</label>
+            <input type="text" class="form-control" id="customerName" readonly value="@Order.CustomerName" />
+        </div>
+        <div class="form-group">
+            <label for="customerAddress">Customer Address:</label>
+            <input type="text" class="form-control" id="customerAddress" readonly value="@Order.CustomerAddress" />
+        </div>
+        <div class="form-group">
+            <label for="customerPhone">Customer Phone:</label>
+            <input type="text" class="form-control" id="customerPhone" readonly value="@Order.CustomerPhone" />
+        </div>
+        <div class="form-group">
+            <label for="orderDetails">Order Details:</label>
+            <textarea class="form-control" id="orderDetails" readonly>@Order.OrderDetails</textarea>
+        </div>
+        <div class="form-group">
+            <label for="orderStatus">Order Status:</label>
+            <select class="form-control" id="orderStatus" @bind="@SelectedStatus">
+                <option value="@OrderStatus.Pending">Pending</option>
+                <option value="@OrderStatus.Shipped">Shipped</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" @onclick="@HandleSubmit">Update Order</button>
+    </form>
+}
+else
+{
+    <p>Order not found.</p>
+}
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+
+    private Order Order { get; set; }
+
+    private OrderStatus SelectedStatus { get; set; }
+
+    private void HandleSubmit()
+    {
+        return;
+    }
+}

@@ -1,13 +1,18 @@
 ﻿@if (!string.IsNullOrWhiteSpace(ErrorMessage))
 {
-    <div class="alert alert-danger"> 
+    <div class="alert alert-danger">
         @ErrorMessage
-    </div>   
+    </div>
 }
 
 @code {
 
     [Parameter]
     public string ErrorMessage { get; set; }
+
+    public ErrorMessageComponent(string errorMessage)
+    {
+        ErrorMessage = errorMessage;
+    }
 
 }

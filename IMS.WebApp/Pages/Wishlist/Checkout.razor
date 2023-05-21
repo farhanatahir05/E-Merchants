@@ -1,0 +1,60 @@
+﻿@page "/checkout"
+@inject IUpdateAllWishlistUseCase UpdateAllWishlistUseCase
+@inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IAddUserDetailsUseCase AddUserDetailsUseCase
+
+
+<h3>Checkout</h3>
+
+<EditForm Model="checkoutModel" OnValidSubmit="ShowAlert">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <div class="form-group">
+        <label >Name:</label>
+        <InputText  @bind-Value="checkoutModel.Name" class="form-control"></InputText>
+    </div>
+
+
+    <div class="form-group">
+        <label>Contact:</label>
+        <InputText @bind-Value="checkoutModel.Contact" class="form-control"></InputText>
+    </div>
+
+    <div class="form-group">
+        <label >Address</label>
+        <InputTextArea  @bind-Value="checkoutModel.Address" class="form-control"></InputTextArea>
+    </div>
+    <div class="form-group">
+        <label>Payment Method:</label>
+        <select @bind="checkoutModel.PaymentMethod" class="form-control">
+            <option value="cash">Cash on Delivery</option>
+        </select>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    private string userId;
+    private CheckoutModel checkoutModel = new CheckoutModel();
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        userId = user.Identity.Name;
+    }
+
+    public void ShowAlert()
+    {
+        AddUserDetailsUseCase.ExecuteAsync(checkoutModel.Name, checkoutModel.Address, checkoutModel.Contact, userId);
+        UpdateAllWishlistUseCase.ExecuteAsync(userId);
+        JSRuntime.InvokeVoidAsync("alert", "Checked out successfully");
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -35,10 +35,13 @@ namespace IMS.CoreBusiness
         {
             // we are not validating the product object when the product inventories are not loaded
             if (ProductInventories == null || ProductInventories.Count <= 0) return true;
-            
+
             if (this.TotalInventoryCost() > Price) return false;
 
             return true;
         }
+
+
+        public string ImagePath { get; set; } = "";
     }
 }

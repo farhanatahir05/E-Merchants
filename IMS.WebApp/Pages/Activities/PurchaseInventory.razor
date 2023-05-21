@@ -1,4 +1,6 @@
 ﻿@page "/purchase"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize]
 
@@ -72,7 +74,11 @@
         //let's do some clean up here so that we can continously purchase inventories
         this.purchaseViewModel = new PurchaseViewModel();
         this.selectedInventory = null;
-
+       
     }
-
+    public void ShowAlert()
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Added to Wishlist");
+        NavigationManager.NavigateTo("/wishlist");
+    }
 }

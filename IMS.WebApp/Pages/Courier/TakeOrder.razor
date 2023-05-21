@@ -1,0 +1,35 @@
+﻿@page "/takeorder"
+@using IMS.Plugins.EFCore;
+@using IMS.WebApp;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+<h1>Take Order</h1>
+
+<h1>Take Order</h1>
+
+<form>
+    <div class="form-group">
+        <label for="customerName">Customer Name:</label>
+        <input type="text" class="form-control" id="customerName" @bind="@CustomerName">
+    </div>
+    <div class="form-group">
+        <label for="customerAddress">Customer Address:</label>
+        <input type="text" class="form-control" id="customerAddress" @bind="@CustomerAddress">
+    </div>
+    <div class="form-group">
+        <label for="customerPhone">Customer Phone:</label>
+        <input type="text" class="form-control" id="customerPhone" @bind="@CustomerPhone">
+    </div>
+    <div class="form-group">
+        <label for="orderDetails">Order Details:</label>
+        <textarea class="form-control" id="orderDetails" @bind="@OrderDetails"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" >Submit</button>
+</form>
+
+@code {
+    private string CustomerName { get; set; }
+    private string CustomerAddress { get; set; }
+    private string CustomerPhone { get; set; }
+    private string OrderDetails { get; set; }
+}

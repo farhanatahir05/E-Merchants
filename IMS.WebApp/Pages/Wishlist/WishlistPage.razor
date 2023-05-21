@@ -1,0 +1,82 @@
+﻿@page "/wishlist"
+
+@attribute [Authorize]
+
+@inject NavigationManager NavigationManager
+@inject IViewAllWishlistUseCase ViewAllWishlistUseCase
+@inject IDeleteWishlistUseCase DeleteWishlistUseCase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Wishlist</h3>
+<br />
+
+@if (wishLists.Count()>0 && wishLists.Any(x=>!x.IsCheckedOut))
+{
+    <h1>You have @wishLists.Count() items in wishlist</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wishlist in this.wishLists)
+            {
+                <tr>
+                    <td>@wishlist.ProductName</td>
+                    <td>@wishlist.Quantity</td>
+                    <td>@wishlist.Price.ToString("c")</td>
+                    <td>
+                        <button type="button" class="btn btn-primary" @onclick="@(async ()=> await DeleteWishList(wishlist))">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-primary" @onclick="Checkout">
+        Checkout
+    </button>
+}
+else {
+<h3>No items are present in the wishlist</h3>
+}
+
+@code {
+    private List<Wishlist>? wishLists = new List<Wishlist>();
+    private string userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        userId = user.Identity.Name;
+        await LoadWishlists();
+    }
+
+    private void OnSearchProducts(List<Wishlist> wishLists)
+    {
+        this.wishLists = wishLists;
+    }
+
+    private async Task LoadWishlists()
+    {
+        var items = await ViewAllWishlistUseCase.ExecuteAsync(userId);
+        this.wishLists = items.ToList();
+    }
+
+    private async Task DeleteWishList(Wishlist wishlist)
+    {
+        await DeleteWishlistUseCase.ExecuteAsync(wishlist);
+        await LoadWishlists();
+    }
+
+    private void Checkout()
+    {
+        NavigationManager.NavigateTo("/checkout");
+    }
+}

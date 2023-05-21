@@ -1,0 +1,85 @@
+﻿@page "/courier"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IViewUserDetailsByIdUseCase ViewUserDetailsByIdUseCase
+@inject IDeleteWishlistUseCase DeleteWishlistUseCase
+@inject IViewAllWishlistUseCase ViewAllWishlistUseCase
+@inject IJSRuntime JSRuntime
+@inject IDeleteAllWishlistUseCase DeleteAllWishlistUseCase
+@inject NavigationManager NavigationManager
+
+<h3>Courier</h3>
+<br />
+
+@if (wishLists.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (var wishlist in this.wishLists)
+        {
+            <tbody>
+                <tr>
+                    <td>@wishlist.ProductName</td>
+                    <td>@wishlist.Quantity</td>
+                    <td>@wishlist.Price.ToString("c")</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(()=>ShipOrder(wishlist))">Ship Order</button>
+                        <button class="btn btn-primary" @onclick="PendingOrder">Pending Order</button>
+                    </td>
+                </tr>
+            </tbody>
+        }
+    </table>
+
+}
+else
+{
+    <h3>No items present.</h3>
+    <br />
+}
+
+@code {
+    private List<Wishlist>? wishLists = new List<Wishlist>();
+    private string userId;
+    private UserDetails? userDetails;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authenticationState.User;
+        userId = user.Identity.Name;
+        await loadUserDetails();
+    }
+
+    private void ShipOrder(Wishlist wishlist)
+    {
+        DeleteAllWishlistUseCase.ExecuteAsync(userId);
+        DeleteWishlistUseCase.ExecuteAsync(wishlist);
+        JSRuntime.InvokeVoidAsync("alert", "Shipping initiated !!!");
+        NavigationManager.NavigateTo("/");
+    }
+
+    private async void PendingOrder()
+    {
+        JSRuntime.InvokeVoidAsync("alert", "Shipping is pending !!!");
+    }
+
+    private void TakeOrder()
+    {
+
+    }
+
+    private async Task loadUserDetails()
+    {
+        var items = await ViewAllWishlistUseCase.ExecuteAsync(userId);
+        this.wishLists = items.ToList();
+        var user = await ViewUserDetailsByIdUseCase.ExecuteAsync(userId);
+        this.userDetails = user;
+    }
+}

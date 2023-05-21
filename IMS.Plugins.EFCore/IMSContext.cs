@@ -16,6 +16,8 @@ namespace IMS.Plugins.EFCore
 
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<UserDetails> UserDetails { get; set; }
         public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
 
